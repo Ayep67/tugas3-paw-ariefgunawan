@@ -5,23 +5,13 @@ const mongoose = require('mongoose');
  * - Embedding: riwayatKesehatan (array of subdocument)
  * - Referencing: kandang (ObjectId → Kandang collection)
  */
-const riwayatKesehatanSchema = new mongoose.Schema(
+const spesifikasiSchema = new mongoose.Schema(
     {
-        tanggal: {
-            type: Date,
-            required: true,
-            default: Date.now
-        },
-        keterangan: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        dokterHewan: {
+        daya: {
             type: String,
             trim: true
         },
-        obat: {
+        warna:{
             type: String,
             trim: true
         }
@@ -29,44 +19,40 @@ const riwayatKesehatanSchema = new mongoose.Schema(
     { _id: true }
 );
 
-const livestockSchema = new mongoose.Schema(
+const elektronikSchema = new mongoose.Schema(
     {
-        nama: {
+        sku: {
             type: String,
-            required: [true, 'Nama ternak wajib diisi'],
+            required: [true, 'sku wajib diisi'],
             trim: true
         },
-        jenis: {
+        nama: {
             type: String,
-            required: [true, 'Jenis ternak wajib diisi'],
-            enum: ['sapi', 'kambing', 'ayam', 'babi', 'domba', 'kuda'],
+            required: [true, 'Nama wajib diisi'],
+            enum: ['speaker', 'mic', 'lampu'],
             lowercase: true
         },
-        umur: {
+        harga: {
             type: Number,
-            required: [true, 'Umur ternak wajib diisi'],
-            min: [0, 'Umur tidak boleh negatif']
+            required: [true, 'Harga wajib diisi'],
+            min: [0, 'harga tidak boleh negatif']
         },
-        berat: {
-            type: Number,
-            required: [true, 'Berat ternak wajib diisi'],
-            min: [0, 'Berat tidak boleh negatif']
-        },
-        sehat: {
-            type: Boolean,
-            required: [true, 'Status kesehatan wajib diisi'],
-            default: true
+        garansi: {
+            type: String,
+            required: [true, 'Garansi wajib diisi'],
+            enum: ['tanpa', 'toko', 'resmi'],
+            trim: true
         },
 
         // === REFERENCING: hubungan ke koleksi Kandang ===
-        kandang: {
+        kategori: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Kandang',
+            ref: 'Kategori',
             default: null
         },
 
         // === EMBEDDING: riwayat kesehatan tersimpan langsung ===
-        riwayatKesehatan: [riwayatKesehatanSchema]
+        spesifikasiSchema: [spesifikasiSchema]
     },
     {
         timestamps: true,
@@ -75,12 +61,10 @@ const livestockSchema = new mongoose.Schema(
 );
 
 // Index untuk mempercepat filtering & sorting
-livestockSchema.index({ jenis: 1 });
-livestockSchema.index({ sehat: 1 });
-livestockSchema.index({ berat: 1 });
-livestockSchema.index({ umur: 1 });
-livestockSchema.index({ kandang: 1 });
+elektronikSchema.index({ nama: 1 });
+elektronikSchema.index({ harga: 1 });
+elektronikSchema.index({ garansi: 1 });
 
-const Livestock = mongoose.model('Livestock', livestockSchema);
+const Elektronik = mongoose.model('Elektronik', elektronikSchema);
 
-module.exports = Livestock;
+module.exports = Elektronik;

@@ -7,8 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-const livestockRoutes = require('./routes/livestockRoutes');
-const kandangRoutes   = require('./routes/kandangRoutes');
+const elektronikRoutes = require('./routes/elektronikRoutes');
+const kategoriRoutes   = require('./routes/kategoriRoutes');
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 const logger = require('./middleware/logger');
@@ -23,43 +23,43 @@ app.get('/', (req, res) => {
         nama: 'Arief Gunawan',
         npm: '2428240087',
         kelas: 'SI5B',
-        topik: 'Peternakan',
+        topik: 'Toko Elektronik',
         resources: {
             livestock: {
-                getAll:   'GET    /livestock',
-                getById:  'GET    /livestock/:id',
-                create:   'POST   /livestock          [x-api-key required]',
-                update:   'PUT    /livestock/:id      [x-api-key required]',
-                delete:   'DELETE /livestock/:id      [x-api-key required]',
-                riwayat:  'POST   /livestock/:id/riwayat [x-api-key required]'
+                getAll:   'GET    /elektronik',
+                getById:  'GET    /elektronik/:id',
+                create:   'POST   /elektronik          [x-api-key required]',
+                update:   'PUT    /elektronik:id      [x-api-key required]',
+                delete:   'DELETE /elektronik:id      [x-api-key required]',
+                riwayat:  'POST   /elektronik/:id/riwayat [x-api-key required]'
             },
             kandang: {
-                getAll:  'GET    /kandang',
-                getById: 'GET    /kandang/:id',
-                create:  'POST   /kandang             [x-api-key required]',
-                update:  'PUT    /kandang/:id         [x-api-key required]',
-                delete:  'DELETE /kandang/:id         [x-api-key required]'
+                getAll:  'GET    /kategori',
+                getById: 'GET    /kategori/:id',
+                create:  'POST   /kategori             [x-api-key required]',
+                update:  'PUT    /kategori/:id         [x-api-key required]',
+                delete:  'DELETE /kategori/:id         [x-api-key required]'
             }
         },
         queryParams: {
-            filtering:  'jenis, sehat, minBerat, maxBerat, minUmur, maxUmur, kandang',
-            sorting:    'sort=berat (asc) | sort=-berat (desc) | sort=-berat,nama (multi)',
+            filtering:  'nama, harga, garansi, minHarga, maxHarga, kategori',
+            sorting:    'sort=harga (asc) | sort=-harga (desc) | sort=-harga,nama (multi)',
             pagination: 'page=1&limit=10',
-            projection: 'fields=nama,jenis,berat'
+            projection: 'fields=nama,nama,harga'
         }
     });
 });
 
 // ── API Routes ────────────────────────────────────────────────────────────────
-app.use('/livestock', livestockRoutes);
-app.use('/kandang',   kandangRoutes);
+app.use('/elektronik', elektronikRoutes);
+app.use('/kategori',   kategoriRoutes);
 
 // ── Error Handling ────────────────────────────────────────────────────────────
 app.use(notFound);
 app.use(errorHandler);
 
 // ── MongoDB Connection ────────────────────────────────────────────────────────
-const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/peternakan';
+const DB_URI = process.env.DB_URI || 'mongodb://localhost:27017/elektronik';
 
 mongoose
     .connect(DB_URI)

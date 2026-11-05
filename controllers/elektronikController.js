@@ -1,30 +1,23 @@
-const Livestock = require('../models/livestockModel');
+const Elektronik = require('../models/elektronikModel');
+const Kategori = require('../models/kategoriModel');
 
 /**
  * Validasi payload untuk create/update livestock
  */
-function validateLivestock(body) {
-    const { nama, jenis, umur, berat, sehat } = body;
+function validateElektronik(body) {
+    const { sku, nama, harga, garansi } = body;
 
-    if (!nama || !jenis || umur === undefined || berat === undefined || sehat === undefined) {
-        return 'Semua field wajib diisi (nama, jenis, umur, berat, sehat)';
+    if (!sku || !nama || harga === undefined || !garansi) {
+        return 'Semua field wajib diisi (sku, nama, harga, garansi)';
     }
 
-    if (typeof sehat !== 'boolean') {
-        return 'Field sehat harus bernilai true atau false';
-    }
-
-    const jenisValid = ['sapi', 'kambing', 'ayam', 'babi', 'domba', 'kuda'];
+    const jenisValid = ['speaker', 'mic', 'lampu'];
     if (!jenisValid.includes(jenis.toLowerCase())) {
-        return `Jenis ternak tidak valid. Pilih dari: ${jenisValid.join(', ')}`;
+        return `Jenis elektronik tidak valid. Pilih dari: ${jenisValid.join(', ')}`;
     }
 
-    if (typeof umur !== 'number' || umur < 0) {
-        return 'Umur harus berupa angka positif';
-    }
-
-    if (typeof berat !== 'number' || berat < 0) {
-        return 'Berat harus berupa angka positif';
+    if (typeof harga !== 'number' || harga < 0) {
+        return 'Harga harus berupa angka positif';
     }
 
     return null;
@@ -42,14 +35,10 @@ exports.getAll = async (req, res, next) => {
     try {
         const {
             // Filtering
-            jenis,
-            sehat,
-            minBerat,
-            maxBerat,
-            minUmur,
-            maxUmur,
-            kandang,
-
+            nama,
+            harga,
+            garansi,
+        
             // Sorting
             sort = '-createdAt',
 
@@ -66,24 +55,13 @@ exports.getAll = async (req, res, next) => {
 
         if (jenis) filter.jenis = jenis.toLowerCase();
 
-        if (sehat !== undefined) {
-            if (sehat === 'true') filter.sehat = true;
-            else if (sehat === 'false') filter.sehat = false;
+        if (minHarga !== undefined || maxHarga !== undefined) {
+            filter.harga = {};
+            if (minHarga !== undefined) filter.harga.$gte = Number(minHarga);
+            if (maxHarga !== undefined) filter.harga.$lte = Number(maxHarga);
         }
 
-        if (minBerat !== undefined || maxBerat !== undefined) {
-            filter.berat = {};
-            if (minBerat !== undefined) filter.berat.$gte = Number(minBerat);
-            if (maxBerat !== undefined) filter.berat.$lte = Number(maxBerat);
-        }
-
-        if (minUmur !== undefined || maxUmur !== undefined) {
-            filter.umur = {};
-            if (minUmur !== undefined) filter.umur.$gte = Number(minUmur);
-            if (maxUmur !== undefined) filter.umur.$lte = Number(maxUmur);
-        }
-
-        if (kandang) filter.kandang = kandang;
+        if (Kategori) filter.Kategori = Kategori;
 
         // ── 2. BUILD SORT ──────────────────────────────────────────────
         // Contoh: sort=-berat,nama → { berat: -1, nama: 1 }
@@ -112,12 +90,12 @@ exports.getAll = async (req, res, next) => {
 
         // ── 5. EXECUTE QUERY ──────────────────────────────────────────
         const [data, total] = await Promise.all([
-            Livestock.find(filter, projection)
+            Elektronik.find(filter, projection)
                 .sort(sortObj)
                 .skip(skip)
                 .limit(limitNum)
-                .populate('kandang', 'namaKandang lokasi tipeKandang kapasitas'),
-            Livestock.countDocuments(filter)
+                .populate('kategori', 'daya watt warna cerah'),
+            Elektronik.countDocuments(filter)
         ]);
 
         const totalPages = Math.ceil(total / limitNum);
@@ -144,13 +122,13 @@ exports.getAll = async (req, res, next) => {
  */
 exports.getById = async (req, res, next) => {
     try {
-        const data = await Livestock.findById(req.params.id)
-            .populate('kandang', 'namaKandang lokasi tipeKandang kapasitas fasilitas');
+        const data = await Elektronik.findById(req.params.id)
+            .populate('kategori', 'daya watt warna cerah');
 
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Data livestock dengan id ${req.params.id} tidak ditemukan`,
+                message: `Data elektronik dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
@@ -173,16 +151,16 @@ exports.getById = async (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
     try {
-        const error = validateLivestock(req.body);
+        const error = validateElektronik(req.body);
         if (error) {
             return res.status(400).json({ status: 'error', message: error, data: null });
         }
 
-        const data = await Livestock.create(req.body);
+        const data = await Elektronik.create(req.body);
 
         res.status(201).json({
             status: 'success',
-            message: 'Data livestock berhasil ditambahkan',
+            message: 'Data elektronik berhasil ditambahkan',
             data
         });
     } catch (err) {
@@ -199,28 +177,28 @@ exports.create = async (req, res, next) => {
  */
 exports.update = async (req, res, next) => {
     try {
-        const error = validateLivestock(req.body);
+        const error = validateElektronik(req.body);
         if (error) {
             return res.status(400).json({ status: 'error', message: error, data: null });
         }
 
-        const data = await Livestock.findByIdAndUpdate(
+        const data = await Elektronik.findByIdAndUpdate(
             req.params.id,
             req.body,
             { new: true, runValidators: true }
-        ).populate('kandang', 'namaKandang lokasi tipeKandang');
+        ).populate('kategori', 'daya watt warna cerah');
 
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Data livestock dengan id ${req.params.id} tidak ditemukan`,
+                message: `Data elektronik dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
 
         res.json({
             status: 'success',
-            message: `Data livestock berhasil diperbarui`,
+            message: `Data elektronik berhasil diperbarui`,
             data
         });
     } catch (err) {
@@ -240,19 +218,19 @@ exports.update = async (req, res, next) => {
  */
 exports.remove = async (req, res, next) => {
     try {
-        const data = await Livestock.findByIdAndDelete(req.params.id);
+        const data = await Elektronik.findByIdAndDelete(req.params.id);
 
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Data livestock dengan id ${req.params.id} tidak ditemukan`,
+                message: `Data elektronik dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
 
         res.json({
             status: 'success',
-            message: `Data livestock berhasil dihapus`,
+            message: `Data elektronik berhasil dihapus`,
             data: null
         });
     } catch (err) {
@@ -267,34 +245,34 @@ exports.remove = async (req, res, next) => {
  * POST /livestock/:id/riwayat
  * Menambah riwayat kesehatan (embedded subdocument)
  */
-exports.addRiwayatKesehatan = async (req, res, next) => {
+exports.addSpesifikasi = async (req, res, next) => {
     try {
-        const { keterangan, dokterHewan, obat, tanggal } = req.body;
+        const { daya, warna } = req.body;
 
-        if (!keterangan) {
+        if (!daya) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Field keterangan wajib diisi',
+                message: 'Field daya wajib diisi',
                 data: null
             });
         }
 
-        const livestock = await Livestock.findById(req.params.id);
-        if (!livestock) {
+        const elektronik = await Elektronik.findById(req.params.id);
+        if (!elektronik) {
             return res.status(404).json({
                 status: 'error',
-                message: `Data livestock dengan id ${req.params.id} tidak ditemukan`,
+                message: `Data elektronik dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
 
-        livestock.riwayatKesehatan.push({ keterangan, dokterHewan, obat, tanggal });
-        await livestock.save();
+        elektronik.spesifikasi.push({ daya, warna });
+        await elektronik.save();
 
         res.status(201).json({
             status: 'success',
-            message: 'Riwayat kesehatan berhasil ditambahkan',
-            data: livestock.riwayatKesehatan
+            message: 'Riwayat spesifikasi berhasil ditambahkan',
+            data: elektronik.spesifikasi
         });
     } catch (err) {
         if (err.name === 'CastError') {

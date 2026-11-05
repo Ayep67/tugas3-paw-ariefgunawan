@@ -1,4 +1,4 @@
-const Kandang = require('../models/kandangModel');
+const Kategori = require('../models/kategoriModel');
 
 /**
  * GET /kandang

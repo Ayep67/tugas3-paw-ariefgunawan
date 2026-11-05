@@ -1,11 +1,11 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const Kandang   = require('./models/kandangModel');
-const Livestock = require('./models/livestockModel');
+const Kategori   = require('./models/kategoriModel');
+const Elektronik = require('./models/elektronikModel');
 
 // ── Data Kandang ──────────────────────────────────────────────────────────────
-const kandangData = [
+const kategoriData = [
     {
         namaKandang: 'Kandang A1',
         lokasi: 'Blok Timur',

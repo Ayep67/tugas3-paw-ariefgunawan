@@ -4,28 +4,24 @@ const mongoose = require('mongoose');
  * Schema Kandang (Farm/Pen)
  * Digunakan sebagai referencing dari Livestock
  */
-const kandangSchema = new mongoose.Schema(
+const kategoriSchema = new mongoose.Schema(
     {
-        namaKandang: {
+        audio: {
             type: String,
-            required: [true, 'Nama kandang wajib diisi'],
+            required: [true, 'Autdio kandang wajib diisi'],
             trim: true
         },
-        lokasi: {
+        mic: {
             type: String,
-            required: [true, 'Lokasi kandang wajib diisi'],
+            required: [true, 'Mic wajib diisi'],
             trim: true
         },
-        kapasitas: {
-            type: Number,
-            required: [true, 'Kapasitas kandang wajib diisi'],
-            min: [1, 'Kapasitas minimal 1']
-        },
-        tipeKandang: {
+        lampu: {
             type: String,
-            enum: ['sapi', 'kambing', 'ayam', 'babi', 'campuran'],
-            required: [true, 'Tipe kandang wajib diisi']
+            required: [true, 'Mic wajib diisi'],
+            trim: true
         },
+
         // Embedding: fasilitas tersimpan langsung di dokumen kandang
         fasilitas: [
             {
@@ -48,7 +44,7 @@ const kandangSchema = new mongoose.Schema(
     }
 );
 
-const Kandang = mongoose.model('Kandang', kandangSchema);
+const Kategori = mongoose.model('Kategori', kategoriSchema);
 
-module.exports = Kandang;
+module.exports = Kategori;
 
