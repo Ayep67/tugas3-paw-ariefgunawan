@@ -1,0 +1,405 @@
+{
+  "info": {
+    "_postman_id": "10f9621b-28cd-4d93-b60c-b6204f00871d",
+    "name": "Tes Livestock",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58487128",
+    "_collection_link": "https://go.postman.co/collection/58487128-10f9621b-28cd-4d93-b60c-b6204f00871d?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "CRUD",
+      "item": [
+        {
+          "name": "Livestock",
+          "item": [
+            {
+              "name": "Ambil semua data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berupa JSON\", function () {\r\n    pm.response.to.be.json;\r\n});\r\n\r\npm.test(\"Response tidak kosong\", function () {\r\n    pm.expect(pm.response.text()).to.not.be.empty;\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/kandang",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "kandang"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Tambah Data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status berhasil membuat data\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\npm.test(\"Data berhasil disimpan\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.exist;\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\nif (json.data && json.data._id) {\r\n    pm.collectionVariables.set(\"livestockId\", json.data._id);\r\n}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-api-key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nama\": \"Sapi Limosin\",\r\n  \"jenis\": \"sapi\",\r\n  \"umur\": 3,\r\n  \"berat\": 450,\r\n  \"sehat\": true,\r\n  \"kandang\": \"6ae47174bbf87f66a8812683\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/livestock",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "livestock"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ambil data id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response memiliki data\", function () {\r\n    const json = pm.response.json();\r\n    pm.expect(json).to.exist;\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/livestock?fields=nama,jenis,berat",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "livestock"
+                  ],
+                  "query": [
+                    {
+                      "key": "fields",
+                      "value": "nama,jenis,berat"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Perbarui Data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status update berhasil\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berupa JSON\", function () {\r\n    pm.response.to.be.json;\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "x-api-key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nama\": \"Sapi Uji Postman Updated\",\r\n    \"jenis\": \"sapi\",\r\n    \"umur\": 4,\r\n    \"berat\": 425,\r\n    \"sehat\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/livestock/{{livestockId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "livestock",
+                    "{{livestockId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Menghapus Data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status penghapusan berhasil\", function () {\r\n    pm.response.to.have.status(200);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "x-api-key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/livestock/{{livestockId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "livestock",
+                    "{{livestockId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Kandang",
+          "item": [
+            {
+              "name": "Semua Kandang",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response berupa JSON\", function () {\r\n    pm.response.to.be.json;\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "text"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/kandang",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "kandang"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Tambah Kandang",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status berhasil membuat kandang\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\nconst json = pm.response.json();\r\n\r\nif (json.data && json.data._id) {\r\n    pm.collectionVariables.set(\"kandangId\", json.data._id);\r\n}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "x-api-key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"namaKandang\": \"Kandang B67\",\r\n    \"lokasi\": \"Blok Mangga\",\r\n    \"kapasitas\": 100,\r\n    \"tipeKandang\": \"kambing\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/kandang",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "kandang"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Ubah Kandang",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Update kandang berhasil\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Response JSON valid\", function () {\r\n    pm.response.to.be.json;\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Hapus Kandang",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": ""
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Scenario Gagal",
+      "item": [
+        {
+          "name": "Menguji Id tidak ditemukan",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\npm.test(\"Respons menunjukkan data tidak ditemukan\", function () {\r\n    const json = pm.response.json();\r\n\r\n    pm.expect(json.status).to.eql(\"error\");\r\n    pm.expect(json.data).to.eql(null);\r\n    pm.expect(json.message).to.be.a(\"string\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/livestock/999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livestock",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Menguji data tidak lengkap",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\npm.test(\"Validasi data wajib diisi\", function () {\r\n    const json = pm.response.json();\r\n\r\n    pm.expect(json.status).to.eql(\"error\");\r\n    pm.expect(json.message).to.eql(\r\n        \"Semua field wajib diisi\"\r\n    );\r\n    pm.expect(json.data).to.eql(null);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/livestock",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "livestock"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "livestockId",
+      "value": ""
+    },
+    {
+      "key": "kandangId",
+      "value": ""
+    }
+  ]
+}
