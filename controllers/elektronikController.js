@@ -35,9 +35,8 @@ exports.getAll = async (req, res, next) => {
     try {
         const {
             // Filtering
+            minHarga,
             nama,
-            harga,
-            garansi,
         
             // Sorting
             sort = '-createdAt',
@@ -53,7 +52,7 @@ exports.getAll = async (req, res, next) => {
         // ── 1. BUILD FILTER ────────────────────────────────────────────
         const filter = {};
 
-        if (jenis) filter.jenis = jenis.toLowerCase();
+        if (nama) filter.nama = nama.toLowerCase();
 
         if (minHarga !== undefined || maxHarga !== undefined) {
             filter.harga = {};

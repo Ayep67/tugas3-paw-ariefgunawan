@@ -7,7 +7,7 @@ const Kategori = require('../models/kategoriModel');
 exports.getAll = async (req, res, next) => {
     try {
         const {
-            tipeKandang,
+            tipeKategori,
             aktif,
             sort = '-createdAt',
             page = 1,
@@ -16,7 +16,7 @@ exports.getAll = async (req, res, next) => {
         } = req.query;
 
         const filter = {};
-        if (tipeKandang) filter.tipeKandang = tipeKandang.toLowerCase();
+        if (tipeKategori) filter.tipeKategori = tipeKategori.toLowerCase();
         if (aktif !== undefined) filter.aktif = aktif === 'true';
 
         const sortObj = {};
@@ -33,8 +33,8 @@ exports.getAll = async (req, res, next) => {
         if (fields) projection = fields.split(',').join(' ');
 
         const [data, total] = await Promise.all([
-            Kandang.find(filter, projection).sort(sortObj).skip(skip).limit(limitNum),
-            Kandang.countDocuments(filter)
+            Kategori.find(filter, projection).sort(sortObj).skip(skip).limit(limitNum),
+            Kategori.countDocuments(filter)
         ]);
 
         res.json({
@@ -57,11 +57,11 @@ exports.getAll = async (req, res, next) => {
  */
 exports.getById = async (req, res, next) => {
     try {
-        const data = await Kandang.findById(req.params.id);
+        const data = await Kategori.findById(req.params.id);
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Kandang dengan id ${req.params.id} tidak ditemukan`,
+                message: `Kategori dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
@@ -79,10 +79,10 @@ exports.getById = async (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
     try {
-        const data = await Kandang.create(req.body);
+        const data = await Kategori.create(req.body);
         res.status(201).json({
             status: 'success',
-            message: 'Kandang berhasil ditambahkan',
+            message: 'Kategori berhasil ditambahkan',
             data
         });
     } catch (err) {
@@ -99,18 +99,18 @@ exports.create = async (req, res, next) => {
  */
 exports.update = async (req, res, next) => {
     try {
-        const data = await Kandang.findByIdAndUpdate(req.params.id, req.body, {
+        const data = await Kategori.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Kandang dengan id ${req.params.id} tidak ditemukan`,
+                message: `Kategori dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
-        res.json({ status: 'success', message: 'Kandang berhasil diperbarui', data });
+        res.json({ status: 'success', message: 'Kategori berhasil diperbarui', data });
     } catch (err) {
         if (err.name === 'CastError') {
             return res.status(400).json({ status: 'error', message: 'Format ID tidak valid', data: null });
@@ -128,11 +128,11 @@ exports.update = async (req, res, next) => {
  */
 exports.remove = async (req, res, next) => {
     try {
-        const data = await Kandang.findByIdAndDelete(req.params.id);
+        const data = await Kategori.findByIdAndDelete(req.params.id);
         if (!data) {
             return res.status(404).json({
                 status: 'error',
-                message: `Kandang dengan id ${req.params.id} tidak ditemukan`,
+                message: `Kategori dengan id ${req.params.id} tidak ditemukan`,
                 data: null
             });
         }
